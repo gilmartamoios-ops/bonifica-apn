@@ -4,161 +4,178 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sociedade de Consumo e Renda Bonífica</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00a859; --dark: #1d1d1b; --gold: #f9b233; --bg: #f0f2f5; }
+        :root { 
+            --primary: #00a859; 
+            --dark: #1d1d1b; 
+            --gold: #f9b233; 
+            --blue: #3498db;
+            --bg: #f8f9fa; 
+        }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--dark); }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { margin: 0; font-weight: 800; color: var(--dark); text-transform: uppercase; letter-spacing: -1px; }
-        .header p { margin: 5px 0; color: #666; font-size: 1.1em; }
         
-        .card { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        
-        .inputs { display: flex; gap: 20px; justify-content: center; margin-bottom: 40px; background: #fff; border: 2px solid #eee; padding: 20px; border-radius: 15px; }
-        .input-group { text-align: center; }
-        .input-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #888; text-transform: uppercase; }
-        input { border: none; background: #f8f9fa; padding: 10px 20px; border-radius: 10px; font-size: 22px; font-weight: 800; color: var(--primary); text-align: center; width: 120px; border: 2px solid transparent; transition: 0.3s; }
-        input:focus { border-color: var(--primary); outline: none; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { font-weight: 800; text-transform: uppercase; color: var(--dark); margin: 0; font-size: 2rem; }
+        .header p { color: #666; margin-top: 5px; }
 
-        .chart-wrapper { height: 900px; width: 100%; } /* Altura grande para caber os textos */
+        .config-box { 
+            max-width: 800px; margin: 0 auto 40px; background: white; 
+            padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            display: flex; gap: 20px; justify-content: center; align-items: center;
+            border: 2px solid var(--primary);
+        }
+        .config-group { text-align: center; }
+        .config-group label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #aaa; margin-bottom: 5px; }
+        .config-group input { 
+            border: none; background: #f0f0f0; padding: 10px; border-radius: 10px; 
+            font-size: 24px; font-weight: 800; color: var(--primary); width: 140px; text-align: center;
+        }
+
+        .timeline { max-width: 900px; margin: auto; display: flex; flex-direction: column; gap: 20px; }
         
-        .legenda { display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
-        .legenda-item { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 5px; color: white; }
+        .month-card {
+            background: white; border-radius: 20px; padding: 25px;
+            display: grid; grid-template-columns: 120px 1fr 200px;
+            align-items: center; gap: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            position: relative; overflow: hidden;
+            border-left: 10px solid #ccc;
+        }
+        .month-card:hover { transform: scale(1.02); }
+
+        .month-label { text-align: center; }
+        .month-label .num { font-size: 40px; font-weight: 800; line-height: 1; display: block; }
+        .month-label .txt { font-size: 12px; font-weight: 600; text-transform: uppercase; opacity: 0.6; }
+
+        .metrics-grid { 
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; 
+            border-left: 1px solid #eee; border-right: 1px solid #eee; padding: 0 20px;
+        }
+        .metric { display: flex; flex-direction: column; }
+        .metric .m-label { font-size: 10px; font-weight: 700; color: #999; text-transform: uppercase; }
+        .metric .m-value { font-size: 14px; font-weight: 600; color: var(--dark); }
+
+        .income-block { text-align: right; }
+        .income-block .total-label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
+        .income-block .total-value { font-size: 26px; font-weight: 800; color: var(--primary); display: block; }
+        
+        .rank-tag { 
+            display: inline-block; padding: 4px 12px; border-radius: 50px; 
+            font-size: 12px; font-weight: 700; color: white; text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .acelerador-badge {
+            position: absolute; top: 0; right: 0; background: #ff7675; color: white;
+            font-size: 10px; font-weight: 800; padding: 5px 15px; border-radius: 0 0 0 15px;
+        }
+
+        @media (max-width: 768px) {
+            .month-card { grid-template-columns: 1fr; text-align: center; }
+            .metrics-grid { grid-template-columns: 1fr 1fr; border: none; padding: 20px 0; }
+            .income-block { text-align: center; border-top: 1px solid #eee; padding-top: 15px; }
+            .config-box { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
 <div class="header">
     <h1>Sociedade de Consumo e Renda Bonífica</h1>
-    <p>Simulação Realista: O Caminho para a Liberdade Financeira em 3 Ciclos</p>
+    <p>Visualize seu crescimento real mês a mês</p>
 </div>
 
-<div class="card">
-    <div class="inputs">
-        <div class="input-group">
-            <label>Novos Parceiros/Mês</label>
-            <input type="number" id="input_rede" value="3" oninput="atualizar()">
-        </div>
-        <div class="input-group">
-            <label>Valor Movimentado (R$)</label>
-            <input type="number" id="input_mov" value="300" oninput="atualizar()">
-        </div>
+<div class="config-box">
+    <div class="config-group">
+        <label>Parceiros/Mês</label>
+        <input type="number" id="inp_duplicacao" value="3" oninput="render()">
     </div>
-
-    <div class="chart-wrapper">
-        <canvas id="meuGrafico"></canvas>
+    <div style="font-size: 24px; font-weight: 800; color: #ccc;">×</div>
+    <div class="config-group">
+        <label>Valor Movimentado (R$)</label>
+        <input type="number" id="inp_consumo" value="300" oninput="render()">
     </div>
-
-    <div class="legenda" id="legenda_ranks"></div>
 </div>
+
+<div class="timeline" id="dashboard">
+    </div>
 
 <script>
-Chart.register(ChartDataLabels);
-let graficoInstancia;
-
-function calcularDados() {
-    const n = parseInt(document.getElementById('input_rede').value) || 0;
-    const consumo = parseFloat(document.getElementById('input_mov').value) || 0;
+function render() {
+    const n = parseInt(document.getElementById('inp_duplicacao').value) || 0;
+    const consumo = parseFloat(document.getElementById('inp_consumo').value) || 0;
+    const container = document.getElementById('dashboard');
     
-    let totalPessoas = 0;
-    let resultados = [];
+    let html = '';
+    let redeAcumulada = 0;
 
     for (let mes = 1; mes <= 6; mes++) {
-        totalPessoas += Math.pow(n, mes);
-        let volMovimentado = totalPessoas * consumo;
-        let pontosBase = volMovimentado / 3;
+        redeAcumulada += Math.pow(n, mes);
+        let volMovimentado = redeAcumulada * consumo;
+        let ptsOrg = volMovimentado / 3;
         
-        let isFechamento = (mes % 2 === 0);
-        let pontosPIN = isFechamento ? pontosBase * 1.5 : pontosBase;
+        let is3D = (mes % 2 === 0);
+        let ptsCarreira = is3D ? ptsOrg * 1.5 : ptsOrg;
 
-        let rank = { nome: "Consultor", fixo: 0, cor: "#bdc3c7" };
-        if (pontosPIN >= 122500) rank = { nome: "Diamond Global", fixo: 24000, cor: "#00ced1" };
-        else if (pontosPIN >= 78000) rank = { nome: "Diamond Expert", fixo: 12000, cor: "#f9b233" };
-        else if (pontosPIN >= 50000) rank = { nome: "Diamond", fixo: 5000, cor: "#3498db" };
-        else if (pontosPIN >= 28000) rank = { nome: "Professional", fixo: 2500, cor: "#9b59b6" };
-        else if (pontosPIN >= 12000) rank = { nome: "Expert", fixo: 1250, cor: "#e67e22" };
-        else if (pontosPIN >= 5000) rank = { nome: "Senior", fixo: 500, cor: "#2ecc71" };
-        else if (pontosPIN >= 2000) rank = { nome: "Start", fixo: 150, cor: "#95a5a6" };
+        // Regras de PIN
+        let pin = { nome: "Consultor", fixo: 0, cor: "#bdc3c7" };
+        if (ptsCarreira >= 122500) pin = { nome: "Diamond Global", fixo: 24000, cor: "#00ced1" };
+        else if (ptsCarreira >= 78000) pin = { nome: "Diamond Expert", fixo: 12000, cor: "#f9b233" };
+        else if (ptsCarreira >= 50000) pin = { nome: "Diamond", fixo: 5000, cor: "#3498db" };
+        else if (ptsCarreira >= 28000) pin = { nome: "Professional", fixo: 2500, cor: "#9b59b6" };
+        else if (ptsCarreira >= 12000) pin = { nome: "Expert", fixo: 1250, cor: "#e67e22" };
+        else if (ptsCarreira >= 5000) pin = { nome: "Senior", fixo: 500, cor: "#2ecc71" };
+        else if (ptsCarreira >= 2000) pin = { nome: "Start", fixo: 150, cor: "#95a5a6" };
 
-        let unilevel = volMovimentado * 0.05;
-        let rendaTotal = unilevel + rank.fixo;
+        let bonusLevel = volMovimentado * 0.05;
+        let rendaTotal = bonusLevel + pin.fixo;
 
-        resultados.push({
-            mes: mes,
-            rede: totalPessoas,
-            titulo: rank.nome,
-            movimentado: volMovimentado,
-            pontos: Math.floor(pontosPIN),
-            unilevel: unilevel,
-            pin: rank.fixo,
-            total: rendaTotal,
-            cor: rank.cor,
-            acelerador: isFechamento
-        });
+        html += `
+            <div class="month-card" style="border-left-color: ${pin.cor}">
+                ${is3D ? '<div class="acelerador-badge">ACELERADOR 3D ATIVO</div>' : ''}
+                
+                <div class="month-label">
+                    <span class="num">${mes}º</span>
+                    <span class="txt">Mês</span>
+                    <div class="rank-tag" style="background: ${pin.cor}">${pin.nome}</div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <span class="m-label">Rede Ativa</span>
+                        <span class="m-value">${redeAcumulada.toLocaleString()} pessoas</span>
+                    </div>
+                    <div class="metric">
+                        <span class="m-label">Valor Movimentado</span>
+                        <span class="m-value">R$ ${volMovimentado.toLocaleString('pt-BR')}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="m-label">Pontos Carreira</span>
+                        <span class="m-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span>
+                    </div>
+                    <div class="metric">
+                        <span class="m-label">Bônus Level (5%)</span>
+                        <span class="m-value">R$ ${bonusLevel.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="m-label">PIN Bonífica</span>
+                        <span class="m-value">R$ ${pin.fixo.toLocaleString('pt-BR')}</span>
+                    </div>
+                </div>
+
+                <div class="income-block">
+                    <span class="total-label">Renda Total Mensal</span>
+                    <span class="total-value">R$ ${rendaTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                </div>
+            </div>
+        `;
     }
-    return resultados;
+    container.innerHTML = html;
 }
 
-function atualizar() {
-    const dados = calcularDados();
-    const ctx = document.getElementById('meuGrafico').getContext('2d');
-
-    if (graficoInstancia) graficoInstancia.destroy();
-
-    graficoInstancia = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dados.map(d => d.mes + "º MÊS"),
-            datasets: [{
-                data: dados.map(d => d.total),
-                backgroundColor: dados.map(d => d.cor),
-                borderRadius: 15,
-                barThickness: 110
-            }]
-        },
-        options: {
-            indexAxis: 'y', // Inverte para barras horizontais
-            responsive: true,
-            maintainAspectRatio: false,
-            layout: { padding: { right: 100 } },
-            scales: {
-                x: { display: false, beginAtZero: true },
-                y: { grid: { display: false }, ticks: { font: { weight: '800', size: 14 } } }
-            },
-            plugins: {
-                legend: { display: false },
-                datalabels: {
-                    align: 'end',
-                    anchor: 'start',
-                    color: (context) => {
-                        // Texto preto se a barra for muito clara, branco se for escura
-                        return '#1d1d1b';
-                    },
-                    offset: 15,
-                    font: { size: 12, family: 'Poppins' },
-                    formatter: (value, context) => {
-                        const d = dados[context.dataIndex];
-                        return [
-                            `🏆 ${d.titulo.toUpperCase()}`,
-                            `👥 Rede: ${d.rede.toLocaleString()} pessoas`,
-                            `📦 Movimentado: R$ ${d.movimentado.toLocaleString('pt-BR')}`,
-                            `✨ Pontos: ${d.pontos.toLocaleString()} ${d.acelerador ? '(3D)' : ''}`,
-                            `💰 Bônus Level: R$ ${d.unilevel.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`,
-                            `🎗️ PIN Bonífica: R$ ${d.pin.toLocaleString('pt-BR')}`,
-                            `➔ RENDA TOTAL: R$ ${d.total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`
-                        ];
-                    },
-                    textAlign: 'left',
-                    padding: 10
-                }
-            }
-        }
-    });
-}
-
-atualizar();
+render();
 </script>
 
 </body>
