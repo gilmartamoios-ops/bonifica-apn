@@ -64,7 +64,7 @@
 
         .acelerador-badge {
             position: absolute; top: 0; right: 40px; background: var(--danger); color: #fff;
-            font-size: 9px; font-weight: 900; padding: 5px 20px; border-radius: 0 0 15px 15px;
+            font-size: 10px; font-weight: 900; padding: 5px 20px; border-radius: 0 0 15px 15px;
         }
     </style>
 </head>
@@ -97,7 +97,7 @@ function exec() {
     let html = '';
     let redeAcum = 0;
 
-    // NOMENCLATURA E REGRAS RIGOROSAS
+    // NOMENCLATURA RIGOROSA DA BONÍFICA
     const ranks = [
         { min: 0, nome: "Consultor", pin: 0, vme: 1.0, cor: "#95a5a6" },
         { min: 2000, nome: "Empreendedor", pin: 150, vme: 0.50, cor: "#00E5FF" },
@@ -121,7 +121,7 @@ function exec() {
         let is3D = (mes % 2 === 0 && ptsOrg < 50000);
         let ptsCarreira = is3D ? ptsOrg * 1.5 : ptsOrg;
 
-        // Bônus Unilevel Geração (5-5-9-4)
+        // Bônus Unilevel Geração (Tabelas enviadas: 5-5-9-4)
         let bonusLevel = 0;
         for (let g = 1; g <= mes; g++) {
             let volGen = Math.pow(n, g) * v;
@@ -129,13 +129,13 @@ function exec() {
             bonusLevel += volGen * p;
         }
 
-        // Qualificação com VME
+        // VME e Qualificação
         let ptsPorLinha = ptsCarreira / n;
         let rankAtivo = ranks[0];
         
         for (let r of ranks) {
-            let ptsValidos = n * Math.min(ptsPorLinha, r.min * r.vme);
-            if (ptsValidos >= r.min) rankAtivo = r;
+            let ptsQualificados = n * Math.min(ptsPorLinha, r.min * r.vme);
+            if (ptsQualificados >= r.min) rankAtivo = r;
         }
 
         let rendaFinal = bonusLevel + rankAtivo.pin;
@@ -153,10 +153,10 @@ function exec() {
                     <div class="data-item"><span class="data-label">Rede Acumulada</span><span class="data-value">${redeAcum.toLocaleString()} Parceiros</span></div>
                     <div class="data-item"><span class="data-label">Volume Movimentado</span><span class="data-value">R$ ${volMovimentado.toLocaleString('pt-BR')}</span></div>
                     <div class="data-item"><span class="data-label">Volume de Pontos</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
-                    <div class="data-item"><span class="data-label">Bônus Level (Residual)</span><span class="data-value">R$ ${bonusLevel.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
+                    <div class="data-item"><span class="data-label">Bônus Unilevel</span><span class="data-value">R$ ${bonusLevel.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
                     <div class="data-item"><span class="data-label">PIN Bonífica (Fixo)</span><span class="data-value" style="color:var(--gold)">R$ ${rankAtivo.pin.toLocaleString('pt-BR')}</span></div>
                     <div class="data-item">
-                        <span class="data-label">VME (Trava por Linha)</span>
+                        <span class="data-label">VME (Trava por Equipe)</span>
                         <span class="vme-status ${vmePerc > (rankAtivo.vme*100) ? 'vme-alert' : 'vme-ok'}">
                             ${vmePerc.toFixed(1)}% / Max ${Math.round(rankAtivo.vme*100)}%
                         </span>
