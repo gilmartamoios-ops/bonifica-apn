@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bonífica | Dashboard de Ganhos por Pontos</title>
+    <title>Bonífica | Dashboard de Ganhos Realista</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -56,7 +56,7 @@
 
         .income-result { 
             background: #000; padding: 20px; border-radius: 20px; text-align: center;
-            border: 1px solid #333; box-shadow: inset 0 0 15px rgba(0,255,136,0.05);
+            border: 1px solid #333;
         }
         .income-label { font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
         .income-value { font-size: 28px; font-weight: 900; color: var(--primary); display: block; margin-top: 5px; }
@@ -71,7 +71,7 @@
 
 <div class="header">
     <h1>Sociedade de Consumo e Renda Bonífica</h1>
-    <p>SIMULADOR DE GANHOS • PIN RELACIONADO DIRETAMENTE AOS PONTOS</p>
+    <p>SIMULAÇÃO DE GANHOS • ACELERADOR 30D ATÉ 27.500 PTS • PIN POR PONTUAÇÃO</p>
 </div>
 
 <div class="config-panel">
@@ -95,10 +95,10 @@ function run() {
     
     let html = '';
     let redeTotal = 0;
+    let ptsAnterior = 0;
 
-    // TABELA DE PIN POR PONTOS (CORRIGIDA)
     const tiers = [
-        { pts: 0, pin: 100, vme: 1.0 },
+        { pts: 0, pin: 0, vme: 1.0 },
         { pts: 950, pin: 100, vme: 0.5 },
         { pts: 2450, pin: 200, vme: 0.5 },
         { pts: 7250, pin: 700, vme: 0.4 },
@@ -115,12 +115,22 @@ function run() {
     for (let mes = 1; mes <= 12; mes++) {
         redeTotal += Math.pow(n, mes);
         let volTotalBRL = redeTotal * v;
-        let ptsOrg = volTotalBRL / 3;
+        let ptsMensalReal = (volTotalBRL / 3);
         
-        let is3D = (mes % 2 === 0 && ptsOrg < 60000);
-        let ptsCarreira = is3D ? ptsOrg * 1.5 : ptsOrg;
+        // LÓGICA ACELERADOR 30D
+        // "Após o 2º mês, se o 2º ultrapassar o 1º, a empresa dobra a pontuação do 1º"
+        // Aplicável apenas até o Diamond (27.500 pts)
+        let bonus30D = 0;
+        let is3DAtivo = false;
 
-        // CÁLCULO UNILEVEL (5%, 5%, 9%, 4%...)
+        if (mes > 1 && ptsMensalReal > ptsAnterior && ptsMensalReal <= 27500) {
+            bonus30D = ptsAnterior; // Dobra a pontuação do mês anterior (o "primeiro" do ciclo)
+            is3DAtivo = true;
+        }
+        
+        let ptsCarreira = ptsMensalReal + bonus30D;
+
+        // CÁLCULO UNILEVEL
         let unilevelBRL = 0;
         for (let g = 1; g <= mes; g++) {
             let volGen = Math.pow(n, g) * v;
@@ -130,40 +140,42 @@ function run() {
             unilevelBRL += volGen * p;
         }
 
-        // LÓGICA DE PIN POR PONTOS + VME
+        // CÁLCULO DE PIN ATINGIDO
         let ptsPorLinha = ptsCarreira / n;
-        let currentPin = 0;
-        let metaPoints = 0;
+        let currentPinVal = 0;
+        let pinName = 0;
 
         for (let t of tiers) {
             let ptsValidos = n * Math.min(ptsPorLinha, t.pts * t.vme);
             if (ptsValidos >= t.pts) {
-                currentPin = t.pin;
-                metaPoints = t.pts;
+                currentPinVal = t.pin;
+                pinName = t.pts;
             }
         }
 
-        let rendaFinal = unilevelBRL + currentPin;
+        let rendaFinal = unilevelBRL + currentPinVal;
 
         html += `
             <div class="level-card">
-                ${is3D ? '<div class="acelerador-badge">ACELERADOR 3D ATIVO</div>' : ''}
+                ${is3DAtivo ? '<div class="acelerador-badge">ACELERADOR 30D (+'+Math.floor(bonus30D).toLocaleString()+' pts)</div>' : ''}
                 <div class="rank-info">
                     <span class="month">${mes}º</span>
                     <span class="sub">Mês de Projeto</span>
-                    <span class="pin-label">PIN ${metaPoints.toLocaleString()} PTS</span>
+                    <span class="pin-label">PIN ${pinName.toLocaleString()} PTS</span>
                 </div>
                 <div class="data-grid">
-                    <div class="data-item"><span class="data-label">Rede Acumulada</span><span class="data-value">${redeTotal.toLocaleString()} Parceiros</span></div>
-                    <div class="data-item"><span class="data-label">Pontuação Total</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
-                    <div class="data-item"><span class="data-label">Bônus Unilevel</span><span class="data-value unilevel-highlight">R$ ${unilevelBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
-                    <div class="data-item"><span class="data-label">Bônus PIN Fixo</span><span class="data-value bonus-highlight">R$ ${currentPin.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
+                    <div class="data-item"><span class="data-label">Produção Mensal</span><span class="data-value">${Math.floor(ptsMensalReal).toLocaleString()} pts</span></div>
+                    <div class="data-item"><span class="data-label">Pontuação Carreira</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
+                    <div class="data-item"><span class="data-label">Residual Unilevel</span><span class="data-value unilevel-highlight">R$ ${unilevelBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
+                    <div class="data-item"><span class="data-label">Bônus PIN Fixo</span><span class="data-value bonus-highlight">R$ ${currentPinVal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
                 </div>
                 <div class="income-result">
-                    <span class="income-label">RENDA TOTAL ESTIMADA</span>
+                    <span class="income-label">GANHO TOTAL NO MÊS</span>
                     <span class="income-value">R$ ${rendaFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
                 </div>
             </div>`;
+        
+        ptsAnterior = ptsMensalReal; // Atualiza para a comparação do próximo mês
     }
     container.innerHTML = html;
 }
