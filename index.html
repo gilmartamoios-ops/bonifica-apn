@@ -3,108 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Volumes | Sociedade de Consumo</title>
+    <title>Sociedade de Consumo e Renda Bonífica | Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00ff88; --dark: #080808; --card: #121212; --gold: #ffcc00; --text: #ffffff; }
+        :root { 
+            --primary: #00ff88; --dark: #0f0f0f; --card-bg: #1a1a1a;
+            --gold: #d4af37; --text: #ffffff; --danger: #ff4d4d;
+        }
         body { font-family: 'Montserrat', sans-serif; background: var(--dark); color: var(--text); margin: 0; padding: 20px; }
-        .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-weight: 900; font-size: 2rem; color: var(--gold); text-transform: uppercase; margin: 0; }
-        .config-panel { max-width: 900px; margin: 0 auto 40px; background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid #222; display: flex; gap: 30px; justify-content: center; align-items: center; }
-        .config-group { text-align: center; }
-        .config-group label { display: block; font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; }
-        .config-group input { background: #000; border: 1px solid #333; padding: 12px; border-radius: 10px; font-size: 24px; font-weight: 900; color: var(--primary); width: 150px; text-align: center; outline: none; }
-        .career-path { max-width: 1000px; margin: auto; display: flex; flex-direction: column; gap: 20px; }
-        .level-card { background: var(--card); border-radius: 20px; padding: 30px; display: grid; grid-template-columns: 120px 1fr 250px; align-items: center; gap: 20px; border: 1px solid #222; position: relative; }
+        
+        .header { text-align: center; margin-bottom: 50px; }
+        .header h1 { font-weight: 900; font-size: 2.5rem; color: var(--gold); margin: 0; text-transform: uppercase; }
+        .header p { opacity: 0.7; letter-spacing: 2px; font-size: 0.9rem; }
+
+        .config-panel {
+            max-width: 1000px; margin: 0 auto 50px; background: var(--card-bg);
+            padding: 30px; border-radius: 20px; border: 1px solid #333;
+            display: flex; gap: 30px; justify-content: center; align-items: center;
+        }
+        .input-group { text-align: center; }
+        .input-group label { display: block; font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 10px; }
+        .input-group input { 
+            background: #000; border: 1px solid var(--gold); padding: 15px; border-radius: 12px;
+            font-size: 28px; font-weight: 900; color: var(--primary); width: 160px; text-align: center;
+        }
+
+        .career-path { max-width: 1100px; margin: auto; display: flex; flex-direction: column; gap: 30px; }
+        
+        .level-card {
+            background: var(--card-bg); border-radius: 25px; padding: 35px;
+            display: grid; grid-template-columns: 180px 1fr 250px;
+            align-items: center; gap: 30px; border: 1px solid #222;
+            position: relative;
+        }
+
         .month-info { text-align: center; border-right: 1px solid #333; padding-right: 20px; }
-        .month-info .num { font-size: 40px; font-weight: 900; color: #fff; display: block; }
-        .data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 0 20px; }
-        .d-label { font-size: 9px; font-weight: 700; color: #666; text-transform: uppercase; margin-bottom: 4px; }
-        .d-value { font-size: 14px; font-weight: 700; color: #ddd; }
-        .vme-box { color: var(--gold); border: 1px solid #444; padding: 6px 12px; border-radius: 5px; width: fit-content; margin-top: 5px; font-size: 12px; font-weight: 800; }
-        .income-result { background: #000; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #333; }
-        .income-label { font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
-        .income-value { font-size: 26px; font-weight: 900; color: var(--primary); display: block; margin-top: 5px; }
+        .month-info .num { font-size: 48px; font-weight: 900; color: var(--gold); display: block; }
+        .rank-badge { 
+            background: var(--gold); color: #000; padding: 6px 15px; border-radius: 50px;
+            font-size: 11px; font-weight: 900; display: inline-block; margin-top: 10px;
+            text-transform: uppercase; width: 140px;
+        }
+
+        .data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 0 20px; }
+        .data-item { display: flex; flex-direction: column; }
+        .data-label { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+        .data-value { font-size: 15px; font-weight: 700; color: #fff; }
+        
+        .vme-tag { color: var(--primary); font-size: 13px; font-weight: 900; border: 1px solid #333; padding: 5px; border-radius: 5px; width: fit-content; margin-top: 5px; }
+
+        .income-result { 
+            background: #000; padding: 25px; border-radius: 20px; text-align: center;
+            border: 1px solid #333;
+        }
+        .income-label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
+        .income-value { font-size: 30px; font-weight: 900; color: var(--primary); display: block; margin-top: 5px; }
+
+        .acelerador-indicator {
+            position: absolute; top: 0; right: 40px; background: var(--danger); color: #fff;
+            font-size: 10px; font-weight: 900; padding: 5px 20px; border-radius: 0 0 15px 15px;
+        }
     </style>
 </head>
 <body>
 
 <div class="header">
     <h1>Sociedade de Consumo e Renda Bonífica</h1>
-    <p>VOLUME MENSAL • VME EM VALOR DE PONTOS • BÔNUS UNILEVEL (R$)</p>
+    <p>PLANO DE CARREIRA OFICIAL • VOLUME MENSAL • VME EM PONTOS</p>
 </div>
 
 <div class="config-panel">
-    <div class="config-group">
-        <label>Parceiros Diretos</label>
-        <input type="number" id="inp_n" value="3" oninput="exec()">
+    <div class="input-group">
+        <label>NOVOS PARCEIROS/MÊS</label>
+        <input type="number" id="inp_duplicacao" value="5" oninput="render()">
     </div>
-    <div class="config-group">
-        <label>Volume p/ Pessoa (R$)</label>
-        <input type="number" id="inp_v" value="300" oninput="exec()">
+    <div class="input-group">
+        <label>VOLUME POR PESSOA (R$)</label>
+        <input type="number" id="inp_consumo" value="300" oninput="render()">
     </div>
 </div>
 
 <div class="career-path" id="dashboard"></div>
 
 <script>
-function exec() {
-    const n = parseInt(document.getElementById('inp_n').value) || 0;
-    const v = parseFloat(document.getElementById('inp_v').value) || 0;
+function render() {
+    const n = parseInt(document.getElementById('inp_duplicacao').value) || 0;
+    const consumo = parseFloat(document.getElementById('inp_consumo').value) || 0;
     const container = document.getElementById('dashboard');
     
     let html = '';
     let redeTotal = 0;
 
+    const ranks = [
+        { min: 0, nome: "Consultor", vme: 1.0, cor: "#7f8c8d" },
+        { min: 2000, nome: "Empreendedor", vme: 0.50, cor: "#00E5FF" },
+        { min: 5000, nome: "Sênior", vme: 0.50, cor: "#00FF41" },
+        { min: 12000, nome: "Expert", vme: 0.40, cor: "#FFD700" },
+        { min: 28000, nome: "Enterprise", vme: 0.40, cor: "#FF00FF" },
+        { min: 50000, nome: "Diamond", vme: 0.40, cor: "#3D5AFE" },
+        { min: 78000, nome: "Diamond Expert", vme: 0.40, cor: "#FF9100" },
+        { min: 122500, nome: "Diamond Global", vme: 0.40, cor: "#1DE9B6" },
+        { min: 250000, nome: "Empresarial Diamond", vme: 0.35, cor: "#F44336" },
+        { min: 500000, nome: "Imperial Bonific", vme: 0.30, cor: "#FFEB3B" },
+        { min: 1000000, nome: "Majestic Bonific", vme: 0.30, cor: "#ffffff" },
+        { min: 2000000, nome: "Empresarial", vme: 0.30, cor: "#ff3366" }
+    ];
+
     for (let mes = 1; mes <= 12; mes++) {
         redeTotal += Math.pow(n, mes);
-        let volTotalReais = redeTotal * v;
+        let volTotalReais = redeTotal * consumo;
         let ptsOrgTotal = volTotalReais / 3;
         
-        // Volume Pontos Carreira (Com acelerador 3D nos meses pares até 50k pts)
-        let ptsCarreira = (mes % 2 === 0 && ptsOrgTotal < 50000) ? ptsOrgTotal * 1.5 : ptsOrgTotal;
+        let is3D = (mes % 2 === 0 && ptsOrgTotal < 50000);
+        let ptsCarreira = is3D ? ptsOrgTotal * 1.5 : ptsOrgTotal;
 
-        // BÔNUS UNILEVEL (Cálculo Rigoroso sobre VOLUME R$ conforme Tabelas)
+        // Bônus Unilevel (Rigorosamente conforme sua tabela)
         let unilevelReais = 0;
         for (let g = 1; g <= mes; g++) {
-            let volGenReais = Math.pow(n, g) * v;
-            let perc = 0.04; // 4% do volume (G4 em diante)
-            if (g === 1 || g === 2) perc = 0.05; // 5% do volume (G1 e G2)
-            if (g === 3) perc = 0.09; // 9% do volume (G3)
-            unilevelReais += volGenReais * perc;
+            let volGenReais = Math.pow(n, g) * consumo;
+            let p = (g === 1 || g === 2) ? 0.05 : (g === 3 ? 0.09 : 0.04);
+            unilevelReais += volGenReais * p;
         }
 
-        // VME EM VALOR DE PONTOS (Volume por Equipe)
+        // VME em Valor de Pontos
         let ptsPorLinha = ptsCarreira / n;
+
+        // Determinação do Nível (Sem travar o nome, apenas o VME avisa)
+        let rankAtivo = ranks[0];
+        for (let r of ranks) {
+            if (ptsCarreira >= r.min) rankAtivo = r;
+        }
 
         html += `
             <div class="level-card">
+                ${is3D ? '<div class="acelerador-indicator">3D ATIVO</div>' : ''}
                 <div class="month-info">
                     <span class="num">${mes}º</span>
-                    <span style="font-size:10px; font-weight:700; color:#555;">MÊS</span>
+                    <span class="rank-badge" style="background:${rankAtivo.cor}">${rankAtivo.nome}</span>
                 </div>
                 <div class="data-grid">
-                    <div class="data-item"><span class="d-label">Rede Ativa</span><span class="d-value">${redeTotal.toLocaleString()} Parceiros</span></div>
-                    <div class="data-item"><span class="d-label">Volume Movimentado</span><span class="d-value">R$ ${volTotalReais.toLocaleString('pt-BR')}</span></div>
-                    <div class="data-item"><span class="d-label">Volume em Pontos</span><span class="d-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
-                    <div class="data-item">
-                        <span class="d-label">VME (Volume em Pontos p/ Linha)</span>
-                        <div class="vme-box">${Math.floor(ptsPorLinha).toLocaleString()} pts</div>
-                    </div>
-                    <div class="data-item">
-                        <span class="d-label">Residual por Geração (R$)</span>
-                        <span class="d-value">G1:5% | G2:5% | G3:9% | G4+:4%</span>
-                    </div>
+                    <div class="data-item"><span class="data-label">Rede Ativa</span><span class="data-value">${redeTotal.toLocaleString()} Parceiros</span></div>
+                    <div class="data-item"><span class="data-label">Volume Movimentado</span><span class="data-value">R$ ${volTotalReais.toLocaleString('pt-BR')}</span></div>
+                    <div class="data-item"><span class="data-label">Volume de Pontos</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
+                    <div class="data-item"><span class="data-label">VME (Volume por Linha)</span><span class="vme-tag">${Math.floor(ptsPorLinha).toLocaleString()} pts</span></div>
+                    <div class="data-item"><span class="data-label">Bônus Unilevel (Tabela)</span><span class="data-value">5% / 5% / 9% / 4%</span></div>
                 </div>
                 <div class="income-result">
-                    <span class="income-label">Bônus Unilevel Total</span>
+                    <span class="income-label">Bônus Mensal Total</span>
                     <span class="income-value">R$ ${unilevelReais.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
                 </div>
             </div>`;
     }
     container.innerHTML = html;
 }
-exec();
+render();
 </script>
 </body>
 </html>
