@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sociedade de Consumo e Renda Bonífica | Dashboard Profissional</title>
+    <title>Sociedade de Consumo e Renda Bonífica | Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -32,18 +32,18 @@
         
         .level-card {
             background: var(--card); border-radius: 25px; padding: 35px;
-            display: grid; grid-template-columns: 200px 1fr 280px;
-            align-items: center; gap: 30px; border: 1px solid #222;
+            display: grid; grid-template-columns: 180px 1fr 280px;
+            align-items: center; gap: 25px; border: 1px solid #222;
             transition: all 0.4s; position: relative;
         }
-        .level-card:hover { border-color: var(--primary); box-shadow: 0 0 30px rgba(0,255,136,0.1); }
+        .level-card:hover { border-color: var(--primary); }
 
         .rank-info { text-align: center; border-right: 1px solid #333; padding-right: 20px; }
         .rank-info .month { font-size: 52px; font-weight: 900; color: #fff; display: block; line-height: 1; }
-        .rank-title { 
-            color: #000; padding: 10px 15px; border-radius: 8px;
-            font-size: 11px; font-weight: 900; display: inline-block; margin-top: 15px;
-            min-width: 170px; text-transform: uppercase; letter-spacing: 1px;
+        .rank-badge-left { 
+            color: #000; padding: 8px 12px; border-radius: 5px;
+            font-size: 10px; font-weight: 900; display: inline-block; margin-top: 15px;
+            text-transform: uppercase; width: 150px;
         }
 
         .data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 0 20px; }
@@ -51,6 +51,8 @@
         .data-label { font-size: 10px; font-weight: 700; color: #666; text-transform: uppercase; margin-bottom: 5px; }
         .data-value { font-size: 14px; font-weight: 700; color: #ddd; }
         
+        .career-highlight { font-size: 12px; font-weight: 900; display: block; margin-top: 4px; border-radius: 3px; padding: 2px 5px; width: fit-content; }
+
         .vme-status { font-size: 11px; font-weight: 900; margin-top: 10px; }
         .vme-alert { color: var(--danger); }
         .vme-ok { color: var(--primary); }
@@ -72,7 +74,7 @@
 
 <div class="header">
     <h1>Sociedade de Consumo e Renda Bonífica</h1>
-    <p>PLANO DE CARREIRA EXCLUSIVO • VOLUME MENSAL • VME • GERAÇÕES 5-5-9-4%</p>
+    <p>PLANO DE CARREIRA OFICIAL • VOLUME MENSAL • VME • GERAÇÕES 5-5-9-4%</p>
 </div>
 
 <div class="config-panel">
@@ -114,15 +116,14 @@ function run() {
     ];
 
     for (let mes = 1; mes <= 12; mes++) {
-        let novosNoMes = Math.pow(n, mes);
-        redeTotal += novosNoMes;
-        
+        redeTotal += Math.pow(n, mes);
         let volTotal = redeTotal * v;
         let ptsOrg = volTotal / 3;
         
         let is3D = (mes % 2 === 0 && ptsOrg < 50000);
         let ptsCarreira = is3D ? ptsOrg * 1.5 : ptsOrg;
 
+        // Bônus Unilevel Geração (5%, 5%, 9%, 4%)
         let unilevel = 0;
         for (let g = 1; g <= mes; g++) {
             let volGen = Math.pow(n, g) * v;
@@ -147,12 +148,16 @@ function run() {
                 <div class="rank-info">
                     <span class="month">${mes}º</span>
                     <span style="font-size:10px; font-weight:700; color:#555;">MÊS</span>
-                    <span class="rank-title" style="background:${rankAtivo.cor}">${rankAtivo.nome}</span>
+                    <div class="rank-badge-left" style="background:${rankAtivo.cor}">${rankAtivo.nome}</div>
                 </div>
                 <div class="data-grid">
                     <div class="data-item"><span class="data-label">Rede Acumulada</span><span class="data-value">${redeTotal.toLocaleString()} Parceiros</span></div>
                     <div class="data-item"><span class="data-label">Volume Movimentado</span><span class="data-value">R$ ${volTotal.toLocaleString('pt-BR')}</span></div>
-                    <div class="data-item"><span class="data-label">Volume Pontos</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
+                    <div class="data-item">
+                        <span class="data-label">Volume Pontos</span>
+                        <span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span>
+                        <span class="career-highlight" style="color:${rankAtivo.cor}; border: 1px solid ${rankAtivo.cor}">Carr: ${rankAtivo.nome}</span>
+                    </div>
                     <div class="data-item"><span class="data-label">Bônus Unilevel</span><span class="data-value">R$ ${unilevel.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
                     <div class="data-item"><span class="data-label">PIN Bonífica (Fixo)</span><span class="data-value" style="color:var(--gold)">R$ ${rankAtivo.pin.toLocaleString('pt-BR')}</span></div>
                     <div class="data-item">
