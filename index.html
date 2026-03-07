@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Bonífica | Simulação Oficial</title>
+    <title>Bonífica | Dashboard de Ganhos por Pontos</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -13,8 +13,8 @@
         body { font-family: 'Montserrat', sans-serif; background: var(--dark); color: var(--text); margin: 0; padding: 20px; }
         
         .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-weight: 900; font-size: 2rem; color: var(--gold); margin: 0; text-transform: uppercase; }
-        .header p { opacity: 0.7; letter-spacing: 2px; font-size: 0.8rem; }
+        .header h1 { font-weight: 900; font-size: 1.8rem; color: var(--gold); margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        .header p { opacity: 0.7; letter-spacing: 1px; font-size: 0.8rem; margin-top: 10px; }
 
         .config-panel {
             max-width: 900px; margin: 0 auto 40px; background: var(--card);
@@ -38,11 +38,12 @@
         }
 
         .rank-info { text-align: center; border-right: 1px solid #333; }
-        .rank-info .month { font-size: 48px; font-weight: 900; color: #fff; display: block; }
-        .rank-title { 
-            color: #000; padding: 8px 12px; border-radius: 6px;
-            font-size: 10px; font-weight: 900; display: inline-block; margin-top: 10px;
-            width: 175px; text-transform: uppercase;
+        .rank-info .month { font-size: 44px; font-weight: 900; color: #fff; display: block; line-height: 1; }
+        .rank-info .sub { font-size: 10px; font-weight: 700; color: #666; text-transform: uppercase; margin-top: 5px; display: block; }
+        .pin-label { 
+            color: #000; padding: 6px 12px; border-radius: 6px; background: var(--gold);
+            font-size: 11px; font-weight: 900; display: inline-block; margin-top: 15px;
+            width: 140px; text-transform: uppercase;
         }
 
         .data-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; }
@@ -55,10 +56,10 @@
 
         .income-result { 
             background: #000; padding: 20px; border-radius: 20px; text-align: center;
-            border: 1px solid #333;
+            border: 1px solid #333; box-shadow: inset 0 0 15px rgba(0,255,136,0.05);
         }
         .income-label { font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
-        .income-value { font-size: 30px; font-weight: 900; color: var(--primary); display: block; margin-top: 5px; }
+        .income-value { font-size: 28px; font-weight: 900; color: var(--primary); display: block; margin-top: 5px; }
 
         .acelerador-badge {
             position: absolute; top: 0; right: 40px; background: var(--danger); color: #fff;
@@ -70,7 +71,7 @@
 
 <div class="header">
     <h1>Sociedade de Consumo e Renda Bonífica</h1>
-    <p>TABELA DE GANHOS MENSAL • VALORES EM DINHEIRO • PIN FIXO CORRIGIDO</p>
+    <p>SIMULADOR DE GANHOS • PIN RELACIONADO DIRETAMENTE AOS PONTOS</p>
 </div>
 
 <div class="config-panel">
@@ -95,20 +96,20 @@ function run() {
     let html = '';
     let redeTotal = 0;
 
-    // TABELA DE PIN FIXO (BÔNUS BONÍFICA) - VALORES CORRIGIDOS PELO USUÁRIO
-    const ranks = [
-        { min: 0, nome: "Consultor", pin: 0, vme: 1.0, cor: "#7f8c8d" },
-        { min: 2000, nome: "Empreendedor", pin: 100, vme: 0.50, cor: "#00E5FF" },
-        { min: 5000, nome: "Sênior", pin: 200, vme: 0.50, cor: "#00FF41" },
-        { min: 12000, nome: "Expert", pin: 700, vme: 0.40, cor: "#FFD700" },
-        { min: 28000, nome: "Enterprise", pin: 1300, vme: 0.40, cor: "#FF00FF" },
-        { min: 50000, nome: "Diamond", pin: 4000, vme: 0.40, cor: "#3D5AFE" },
-        { min: 78000, nome: "Diamond Expert", pin: 12000, vme: 0.40, cor: "#FF9100" },
-        { min: 122500, nome: "Diamond Global", pin: 24000, vme: 0.40, cor: "#1DE9B6" },
-        { min: 250000, nome: "Empresarial Diamond", pin: 34000, vme: 0.35, cor: "#F44336" },
-        { min: 500000, nome: "Imperial Bonific", pin: 60000, vme: 0.30, cor: "#FFEB3B" },
-        { min: 1000000, nome: "Majestic Bonific", pin: 130000, vme: 0.30, cor: "#ffffff" },
-        { min: 2000000, nome: "Empresarial", pin: 250000, vme: 0.30, cor: "#ff3366" }
+    // TABELA DE PIN POR PONTOS (CORRIGIDA)
+    const tiers = [
+        { pts: 0, pin: 100, vme: 1.0 },
+        { pts: 950, pin: 100, vme: 0.5 },
+        { pts: 2450, pin: 200, vme: 0.5 },
+        { pts: 7250, pin: 700, vme: 0.4 },
+        { pts: 14750, pin: 1300, vme: 0.4 },
+        { pts: 27500, pin: 4000, vme: 0.4 },
+        { pts: 60000, pin: 12000, vme: 0.4 },
+        { pts: 122500, pin: 24000, vme: 0.4 },
+        { pts: 247500, pin: 34000, vme: 0.35 },
+        { pts: 495000, pin: 60000, vme: 0.3 },
+        { pts: 1475000, pin: 130000, vme: 0.3 },
+        { pts: 3000000, pin: 250000, vme: 0.3 }
     ];
 
     for (let mes = 1; mes <= 12; mes++) {
@@ -116,40 +117,47 @@ function run() {
         let volTotalBRL = redeTotal * v;
         let ptsOrg = volTotalBRL / 3;
         
-        let is3D = (mes % 2 === 0 && ptsOrg < 50000);
+        let is3D = (mes % 2 === 0 && ptsOrg < 60000);
         let ptsCarreira = is3D ? ptsOrg * 1.5 : ptsOrg;
 
-        // BÔNUS UNILEVEL (5%, 5%, 9%, 4%) CALCULADO SOBRE VOLUME R$
+        // CÁLCULO UNILEVEL (5%, 5%, 9%, 4%...)
         let unilevelBRL = 0;
         for (let g = 1; g <= mes; g++) {
             let volGen = Math.pow(n, g) * v;
-            let p = 0.04; 
+            let p = 0.04;
             if(g === 1 || g === 2) p = 0.05;
             if(g === 3) p = 0.09;
             unilevelBRL += volGen * p;
         }
 
+        // LÓGICA DE PIN POR PONTOS + VME
         let ptsPorLinha = ptsCarreira / n;
-        let rankAtivo = ranks[0];
-        for (let r of ranks) {
-            let ptsValidos = n * Math.min(ptsPorLinha, r.min * r.vme);
-            if (ptsValidos >= r.min) rankAtivo = r;
+        let currentPin = 0;
+        let metaPoints = 0;
+
+        for (let t of tiers) {
+            let ptsValidos = n * Math.min(ptsPorLinha, t.pts * t.vme);
+            if (ptsValidos >= t.pts) {
+                currentPin = t.pin;
+                metaPoints = t.pts;
+            }
         }
 
-        let rendaFinal = unilevelBRL + rankAtivo.pin;
+        let rendaFinal = unilevelBRL + currentPin;
 
         html += `
             <div class="level-card">
                 ${is3D ? '<div class="acelerador-badge">ACELERADOR 3D ATIVO</div>' : ''}
                 <div class="rank-info">
-                    <span class="month">${mes}º MÊS</span>
-                    <span class="rank-title" style="background:${rankAtivo.cor}">${rankAtivo.nome}</span>
+                    <span class="month">${mes}º</span>
+                    <span class="sub">Mês de Projeto</span>
+                    <span class="pin-label">PIN ${metaPoints.toLocaleString()} PTS</span>
                 </div>
                 <div class="data-grid">
-                    <div class="data-item"><span class="data-label">Rede</span><span class="data-value">${redeTotal.toLocaleString()} Parceiros</span></div>
-                    <div class="data-item"><span class="data-label">Volume de Pontos</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
-                    <div class="data-item"><span class="data-label">Unilevel (Residual)</span><span class="data-value unilevel-highlight">R$ ${unilevelBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
-                    <div class="data-item"><span class="data-label">Bônus PIN Fixo</span><span class="data-value bonus-highlight">R$ ${rankAtivo.pin.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
+                    <div class="data-item"><span class="data-label">Rede Acumulada</span><span class="data-value">${redeTotal.toLocaleString()} Parceiros</span></div>
+                    <div class="data-item"><span class="data-label">Pontuação Total</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
+                    <div class="data-item"><span class="data-label">Bônus Unilevel</span><span class="data-value unilevel-highlight">R$ ${unilevelBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
+                    <div class="data-item"><span class="data-label">Bônus PIN Fixo</span><span class="data-value bonus-highlight">R$ ${currentPin.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
                 </div>
                 <div class="income-result">
                     <span class="income-label">RENDA TOTAL ESTIMADA</span>
