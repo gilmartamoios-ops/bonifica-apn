@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bonífica | Simulador de Ganhos</title>
+    <title>Bonífica | Simulador de Ganhos Oficial</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -71,12 +71,12 @@
 
 <div class="header">
     <h1>Sociedade de Consumo e Renda Bonífica</h1>
-    <p>SIMULAÇÃO DE GANHOS • PIN ATÉ 949 PTS = R$ 0,00 • ACELERADOR 30D</p>
+    <p>0 - 949 PTS = PIN R$ 0,00 • PRIMEIRO PIN (R$ 100,00) AOS 950 PTS</p>
 </div>
 
 <div class="config-panel">
     <div class="config-group">
-        <label>Parceiros/Mês</label>
+        <label>Novos Parceiros/Mês</label>
         <input type="number" id="inp_n" value="5" oninput="run()">
     </div>
     <div class="config-group">
@@ -97,9 +97,8 @@ function run() {
     let redeTotal = 0;
     let ptsAnterior = 0;
 
-    // TABELA DE PIN POR PONTOS (CORRIGIDA: 0-949 = R$ 0,00)
+    // ESCALA DE PIN FIXO (CONFORME CORREÇÃO)
     const tiers = [
-        { pts: 0, pin: 0, vme: 1.0 },
         { pts: 950, pin: 100, vme: 0.5 },
         { pts: 2450, pin: 200, vme: 0.5 },
         { pts: 7250, pin: 700, vme: 0.4 },
@@ -118,10 +117,9 @@ function run() {
         let volTotalBRL = redeTotal * v;
         let ptsMensalReal = (volTotalBRL / 3);
         
-        // LÓGICA ACELERADOR 30D (Dobrar pts anterior se houver crescimento, teto 27.500)
+        // REGRAS DO ACELERADOR 30D (Até o marco de 27.500 pts)
         let bonus30D = 0;
         let is3DAtivo = false;
-
         if (mes > 1 && ptsMensalReal > ptsAnterior && ptsMensalReal <= 27500) {
             bonus30D = ptsAnterior; 
             is3DAtivo = true;
@@ -129,7 +127,7 @@ function run() {
         
         let ptsCarreira = ptsMensalReal + bonus30D;
 
-        // CÁLCULO UNILEVEL
+        // BÔNUS UNILEVEL (Volume R$)
         let unilevelBRL = 0;
         for (let g = 1; g <= mes; g++) {
             let volGen = Math.pow(n, g) * v;
@@ -139,17 +137,16 @@ function run() {
             unilevelBRL += volGen * p;
         }
 
-        // CÁLCULO DE PIN ATINGIDO (COM TRAVA DE 950 PTS PARA O 1º PIN)
-        let ptsPorLinha = ptsCarreira / n;
+        // DETERMINAÇÃO DO PIN (Mínimo 950 pts para R$ 100,00)
         let currentPinVal = 0;
-        let pinName = 0;
+        let metaAtingida = 0;
+        let ptsPorLinha = ptsCarreira / n;
 
         for (let t of tiers) {
-            // Regra do VME: Considera o menor entre o teto do cargo e a produção por linha
             let ptsValidos = n * Math.min(ptsPorLinha, t.pts * t.vme);
             if (ptsValidos >= t.pts) {
                 currentPinVal = t.pin;
-                pinName = t.pts;
+                metaAtingida = t.pts;
             }
         }
 
@@ -157,20 +154,20 @@ function run() {
 
         html += `
             <div class="level-card">
-                ${is3DAtivo ? '<div class="acelerador-badge">ACELERADOR 30D (+'+Math.floor(bonus30D).toLocaleString()+' pts)</div>' : ''}
+                ${is3DAtivo ? '<div class="acelerador-badge">ACELERADOR 30D ATIVO (+'+Math.floor(bonus30D).toLocaleString()+' pts)</div>' : ''}
                 <div class="rank-info">
                     <span class="month">${mes}º</span>
                     <span class="sub">Mês</span>
-                    <span class="pin-label">PIN ${pinName.toLocaleString()} PTS</span>
+                    <span class="pin-label">${metaAtingida > 0 ? 'PIN ' + metaAtingida.toLocaleString() + ' PTS' : 'SEM PIN'}</span>
                 </div>
                 <div class="data-grid">
-                    <div class="data-item"><span class="data-label">Produção Mensal</span><span class="data-value">${Math.floor(ptsMensalReal).toLocaleString()} pts</span></div>
-                    <div class="data-item"><span class="data-label">Pontuação Carreira</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts${is3DAtivo ? ' (Bonificado)' : ''}</span></div>
-                    <div class="data-item"><span class="data-label">Unilevel</span><span class="data-value unilevel-highlight">R$ ${unilevelBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
-                    <div class="data-item"><span class="data-label">Bônus PIN</span><span class="data-value bonus-highlight">R$ ${currentPinVal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
+                    <div class="data-item"><span class="data-label">Produção Real</span><span class="data-value">${Math.floor(ptsMensalReal).toLocaleString()} pts</span></div>
+                    <div class="data-item"><span class="data-label">Pontos Carreira</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
+                    <div class="data-item"><span class="data-label">Ganhos Unilevel</span><span class="data-value unilevel-highlight">R$ ${unilevelBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
+                    <div class="data-item"><span class="data-label">Ganhos PIN</span><span class="data-value bonus-highlight">R$ ${currentPinVal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
                 </div>
                 <div class="income-result">
-                    <span class="income-label">TOTAL ESTIMADO</span>
+                    <span class="income-label">TOTAL NO MÊS</span>
                     <span class="income-value">R$ ${rendaFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
                 </div>
             </div>`;
