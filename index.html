@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bonífica | Simulador de Ganhos Oficial</title>
+    <title>Bonífica | Simulador de Ciclos 30D</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -13,19 +13,16 @@
         body { font-family: 'Montserrat', sans-serif; background: var(--dark); color: var(--text); margin: 0; padding: 20px; }
         
         .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-weight: 900; font-size: 1.8rem; color: var(--gold); margin: 0; text-transform: uppercase; letter-spacing: 2px; }
-        .header p { opacity: 0.7; letter-spacing: 1px; font-size: 0.8rem; margin-top: 10px; }
-
+        .header h1 { font-weight: 900; font-size: 1.8rem; color: var(--gold); margin: 0; text-transform: uppercase; }
+        
         .config-panel {
             max-width: 900px; margin: 0 auto 40px; background: var(--card);
             padding: 25px; border-radius: 20px; border: 1px solid #222;
             display: flex; gap: 40px; justify-content: center; align-items: center;
         }
-        .config-group { text-align: center; }
-        .config-group label { display: block; font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 8px; text-transform: uppercase; }
         .config-group input { 
             background: #000; border: 1px solid var(--gold); padding: 12px; border-radius: 12px;
-            font-size: 24px; font-weight: 900; color: var(--primary); width: 140px; text-align: center; outline: none;
+            font-size: 24px; font-weight: 900; color: var(--primary); width: 140px; text-align: center;
         }
 
         .career-path { max-width: 1100px; margin: auto; display: flex; flex-direction: column; gap: 20px; }
@@ -34,35 +31,33 @@
             background: var(--card); border-radius: 25px; padding: 30px;
             display: grid; grid-template-columns: 180px 1fr 280px;
             align-items: center; gap: 20px; border: 1px solid #222;
-            transition: 0.3s; position: relative;
+            position: relative;
         }
 
         .rank-info { text-align: center; border-right: 1px solid #333; }
-        .rank-info .month { font-size: 44px; font-weight: 900; color: #fff; display: block; line-height: 1; }
-        .rank-info .sub { font-size: 10px; font-weight: 700; color: #666; text-transform: uppercase; margin-top: 5px; display: block; }
+        .month-num { font-size: 44px; font-weight: 900; color: #fff; }
+        .cycle-info { font-size: 10px; color: var(--gold); font-weight: 700; text-transform: uppercase; display: block; }
+        
         .pin-label { 
             color: #000; padding: 6px 12px; border-radius: 6px; background: var(--gold);
-            font-size: 11px; font-weight: 900; display: inline-block; margin-top: 15px;
-            width: 140px; text-transform: uppercase;
+            font-size: 11px; font-weight: 900; display: inline-block; margin-top: 15px; width: 140px;
         }
 
         .data-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; }
-        .data-item { display: flex; flex-direction: column; }
         .data-label { font-size: 10px; font-weight: 700; color: #777; text-transform: uppercase; }
         .data-value { font-size: 14px; font-weight: 700; color: #eee; }
         
         .bonus-highlight { color: var(--gold) !important; font-size: 16px; font-weight: 900; }
-        .unilevel-highlight { color: #fff !important; font-size: 16px; font-weight: 900; }
 
-        .income-result { 
-            background: #000; padding: 20px; border-radius: 20px; text-align: center;
-            border: 1px solid #333;
-        }
-        .income-label { font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
-        .income-value { font-size: 28px; font-weight: 900; color: var(--primary); display: block; margin-top: 5px; }
+        .income-result { background: #000; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid #333; }
+        .income-value { font-size: 28px; font-weight: 900; color: var(--primary); display: block; }
 
         .acelerador-badge {
             position: absolute; top: 0; right: 40px; background: var(--danger); color: #fff;
+            font-size: 9px; font-weight: 900; padding: 5px 15px; border-radius: 0 0 10px 10px;
+        }
+        .reset-badge {
+            position: absolute; top: 0; right: 40px; background: #444; color: #fff;
             font-size: 9px; font-weight: 900; padding: 5px 15px; border-radius: 0 0 10px 10px;
         }
     </style>
@@ -70,17 +65,17 @@
 <body>
 
 <div class="header">
-    <h1>Sociedade de Consumo e Renda Bonífica</h1>
-    <p>0 - 949 PTS = PIN R$ 0,00 • PRIMEIRO PIN (R$ 100,00) AOS 950 PTS</p>
+    <h1>Dashboard Bonífica</h1>
+    <p>LOGICA DE CICLOS 3D: Acelera no 2º mês | Zera e Reinicia no 3º mês</p>
 </div>
 
 <div class="config-panel">
     <div class="config-group">
-        <label>Novos Parceiros/Mês</label>
+        <label style="color:var(--gold); display:block; font-size:10px; margin-bottom:5px;">PARCEIROS/MÊS</label>
         <input type="number" id="inp_n" value="5" oninput="run()">
     </div>
     <div class="config-group">
-        <label>Consumo Médio (R$)</label>
+        <label style="color:var(--gold); display:block; font-size:10px; margin-bottom:5px;">CONSUMO (R$)</label>
         <input type="number" id="inp_v" value="300" oninput="run()">
     </div>
 </div>
@@ -95,9 +90,8 @@ function run() {
     
     let html = '';
     let redeTotal = 0;
-    let ptsAnterior = 0;
+    let ptsMesAnterior = 0;
 
-    // ESCALA DE PIN FIXO (CONFORME CORREÇÃO)
     const tiers = [
         { pts: 950, pin: 100, vme: 0.5 },
         { pts: 2450, pin: 200, vme: 0.5 },
@@ -113,21 +107,27 @@ function run() {
     ];
 
     for (let mes = 1; mes <= 12; mes++) {
+        // Crescimento da rede
         redeTotal += Math.pow(n, mes);
         let volTotalBRL = redeTotal * v;
-        let ptsMensalReal = (volTotalBRL / 3);
+        let ptsMensalReal = volTotalBRL / 3;
         
-        // REGRAS DO ACELERADOR 30D (Até o marco de 27.500 pts)
+        // LÓGICA DE CICLO (1-2, 3-4, 5-6...)
+        let posicaoNoCiclo = (mes % 2 === 0) ? 2 : 1;
         let bonus30D = 0;
         let is3DAtivo = false;
-        if (mes > 1 && ptsMensalReal > ptsAnterior && ptsMensalReal <= 27500) {
-            bonus30D = ptsAnterior; 
-            is3DAtivo = true;
+
+        if (posicaoNoCiclo === 2) {
+            // No segundo mês do ciclo, se cresceu e está abaixo do teto de 27.500 pts
+            if (ptsMensalReal > ptsMesAnterior && ptsMensalReal <= 27500) {
+                bonus30D = ptsMesAnterior; // Dobra os pontos do primeiro mês do ciclo
+                is3DAtivo = true;
+            }
         }
-        
+
         let ptsCarreira = ptsMensalReal + bonus30D;
 
-        // BÔNUS UNILEVEL (Volume R$)
+        // UNILEVEL (Sempre sobre o residual real)
         let unilevelBRL = 0;
         for (let g = 1; g <= mes; g++) {
             let volGen = Math.pow(n, g) * v;
@@ -137,7 +137,7 @@ function run() {
             unilevelBRL += volGen * p;
         }
 
-        // DETERMINAÇÃO DO PIN (Mínimo 950 pts para R$ 100,00)
+        // CÁLCULO DO PIN
         let currentPinVal = 0;
         let metaAtingida = 0;
         let ptsPorLinha = ptsCarreira / n;
@@ -150,29 +150,31 @@ function run() {
             }
         }
 
-        let rendaFinal = unilevelBRL + currentPinVal;
-
         html += `
             <div class="level-card">
-                ${is3DAtivo ? '<div class="acelerador-badge">ACELERADOR 30D ATIVO (+'+Math.floor(bonus30D).toLocaleString()+' pts)</div>' : ''}
+                ${is3DAtivo ? '<div class="acelerador-badge">ACELERADOR 3D: +'+Math.floor(bonus30D).toLocaleString()+' pts</div>' : ''}
+                ${posicaoNoCiclo === 1 && mes > 1 ? '<div class="reset-badge">CICLO REINICIADO</div>' : ''}
+                
                 <div class="rank-info">
-                    <span class="month">${mes}º</span>
-                    <span class="sub">Mês</span>
-                    <span class="pin-label">${metaAtingida > 0 ? 'PIN ' + metaAtingida.toLocaleString() + ' PTS' : 'SEM PIN'}</span>
+                    <span class="month-num">${mes}º</span>
+                    <span class="cycle-info">${posicaoNoCiclo}º MÊS DO CICLO</span>
+                    <span class="pin-label">${metaAtingida > 0 ? 'PIN ' + metaAtingida.toLocaleString() : 'SEM PIN'}</span>
                 </div>
+                
                 <div class="data-grid">
-                    <div class="data-item"><span class="data-label">Produção Real</span><span class="data-value">${Math.floor(ptsMensalReal).toLocaleString()} pts</span></div>
-                    <div class="data-item"><span class="data-label">Pontos Carreira</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
-                    <div class="data-item"><span class="data-label">Ganhos Unilevel</span><span class="data-value unilevel-highlight">R$ ${unilevelBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
-                    <div class="data-item"><span class="data-label">Ganhos PIN</span><span class="data-value bonus-highlight">R$ ${currentPinVal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
+                    <div class="data-item"><span class="data-label">Produção Residual</span><span class="data-value">${Math.floor(ptsMensalReal).toLocaleString()} pts</span></div>
+                    <div class="data-item"><span class="data-label">Pontos de Carreira</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
+                    <div class="data-item"><span class="data-label">Residual Unilevel</span><span class="data-value">R$ ${unilevelBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
+                    <div class="data-item"><span class="data-label">Bônus PIN Fixo</span><span class="data-value bonus-highlight">R$ ${currentPinVal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
                 </div>
+
                 <div class="income-result">
-                    <span class="income-label">TOTAL NO MÊS</span>
-                    <span class="income-value">R$ ${rendaFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                    <span class="data-label" style="color:var(--primary)">RENDA TOTAL</span>
+                    <span class="income-value">R$ ${(unilevelBRL + currentPinVal).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
                 </div>
             </div>`;
         
-        ptsAnterior = ptsMensalReal;
+        ptsMesAnterior = ptsMensalReal;
     }
     container.innerHTML = html;
 }
