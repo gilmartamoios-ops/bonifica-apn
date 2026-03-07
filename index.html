@@ -9,56 +9,60 @@
         :root { --primary: #00a859; --dark: #1d1d1b; --gold: #f9b233; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #f4f7f6; }
         .hero { background: var(--dark); color: white; padding: 40px 20px; text-align: center; }
-        .container { max-width: 1100px; margin: -30px auto 50px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .container { max-width: 1200px; margin: -30px auto 50px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .setup { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; background: #f9f9f9; padding: 20px; border-radius: 10px; }
-        input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-        th { background: var(--dark); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
-        .rank-badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; text-transform: uppercase; }
-        .total-display { background: var(--dark); color: white; padding: 20px; border-radius: 10px; margin-top: 20px; text-align: center; }
-        .total-val { font-size: 32px; color: var(--gold); font-weight: bold; }
-        .bonus-tag { color: var(--primary); font-size: 11px; display: block; }
+        input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; min-width: 800px; }
+        th { background: var(--dark); color: white; padding: 15px 10px; text-align: left; }
+        td { padding: 15px 10px; border-bottom: 1px solid #eee; }
+        .rank-badge { padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 11px; text-transform: uppercase; white-space: nowrap; }
+        .total-display { background: var(--dark); color: white; padding: 30px; border-radius: 10px; margin-top: 20px; text-align: center; }
+        .total-val { font-size: 38px; color: var(--gold); font-weight: bold; }
+        .highlight { background: #f0fff4; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="hero">
     <h1>Sociedade de Saúde e Consumo Lucrativo</h1>
-    <p>Simulador de Carreira e Renda Passiva</p>
+    <p>Simulador de Carreira e Projeção de Renda Passiva</p>
 </div>
 
 <div class="container">
     <div class="setup">
         <div>
-            <label>Novos Associados p/ mês (Duplicação):</label>
+            <label>Meta de Novos Associados p/ mês:</label>
             <input type="number" id="duplicacao" value="3" oninput="simular()">
         </div>
         <div>
-            <label>Consumo Mensal (R$):</label>
+            <label>Consumo/Ativação Mensal (R$):</label>
             <input type="number" id="consumo" value="300" oninput="simular()">
         </div>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Mês</th>
-                <th>Rede Acum.</th>
-                <th>Nível de Carreira</th>
-                <th>Pontos Ciclo</th>
-                <th>Bônus Unilevel</th>
-                <th>Bônus PIN (Fixo)</th>
-                <th>Total Mensal</th>
-            </tr>
-        </thead>
-        <tbody id="tabela-carreira"></tbody>
-    </table>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Mês</th>
+                    <th>Rede Acum.</th>
+                    <th>Nível de Carreira</th>
+                    <th>Movimentado (R$)</th>
+                    <th>Pontos Ciclo</th>
+                    <th>Bônus Unilevel</th>
+                    <th>Bônus PIN (Fixo)</th>
+                    <th>Total Mensal</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-carreira"></tbody>
+        </table>
+    </div>
 
     <div class="total-display">
-        <span>Previsão de Renda Final (3º Ciclo)</span>
+        <span>Previsão de Renda Mensal no 3º Ciclo (6º Mês)</span>
         <div id="renda-final" class="total-val">R$ 0,00</div>
-        <p id="status-final"></p>
+        <p>Baseado em consumo inteligente e duplicação da rede.</p>
     </div>
 </div>
 
@@ -70,38 +74,34 @@ function simular() {
     
     let html = '';
     let totalPessoas = 0;
-    let acumuladoPontosCiclo = 0;
     let rendaUltimoMes = 0;
 
-    // Simulação de 6 meses (3 ciclos de 2 meses)
     for (let mes = 1; mes <= 6; mes++) {
+        // Crescimento da rede: cada pessoa traz 'n' novos por mês
+        // Simplificando para progressão geométrica acumulada do plano 3-300
         let novosNoMes = Math.pow(n, mes);
         totalPessoas += novosNoMes;
         
-        let volumeMes = totalPessoas * consumo;
-        let pontosMes = volumeMes / 3;
+        let volumeFinanceiro = totalPessoas * consumo;
+        let pontosBase = volumeFinanceiro / 3;
         
-        // No final de cada ciclo (meses pares), os pontos acumulam
-        if (mes % 2 === 0) {
-            acumuladoPontosCiclo = (volumeMes / 3) * 1.5; // Simulação do peso do ciclo
-        } else {
-            acumuladoPontosCiclo = pontosMes;
-        }
+        // Simulação do acúmulo bimestral (ciclo)
+        let pontosExibicao = (mes % 2 === 0) ? pontosBase * 1.5 : pontosBase;
 
-        // Definição de Graduação e Bônus PIN (Fixo)
+        // Lógica de Graduação e Bônus PIN (Fixo) baseada no PDF
         let pinFixo = 0;
         let rank = "Consultor";
         let cor = "#999";
 
-        if (acumuladoPontosCiclo >= 122500) { rank = "Diamond Global"; pinFixo = 24000; cor = "#00ced1"; }
-        else if (acumuladoPontosCiclo >= 78000) { rank = "Diamond Expert"; pinFixo = 12000; cor = "#f9b233"; }
-        else if (acumuladoPontosCiclo >= 50000) { rank = "Diamond"; pinFixo = 5000; cor = "#3498db"; }
-        else if (acumuladoPontosCiclo >= 28000) { rank = "Professional"; pinFixo = 2500; cor = "#9b59b6"; }
-        else if (acumuladoPontosCiclo >= 12000) { rank = "Expert"; pinFixo = 1250; cor = "#e67e22"; }
-        else if (acumuladoPontosCiclo >= 5000) { rank = "Senior"; pinFixo = 500; cor = "#27ae60"; }
-        else if (acumuladoPontosCiclo >= 2000) { rank = "Start"; pinFixo = 150; cor = "#7f8c8d"; }
+        if (pontosExibicao >= 122500) { rank = "Diamond Global"; pinFixo = 24000; cor = "#00ced1"; }
+        else if (pontosExibicao >= 78000) { rank = "Diamond Expert"; pinFixo = 12000; cor = "#f9b233"; }
+        else if (pontosExibicao >= 50000) { rank = "Diamond"; pinFixo = 5000; cor = "#3498db"; }
+        else if (pontosExibicao >= 28000) { rank = "Professional"; pinFixo = 2500; cor = "#9b59b6"; }
+        else if (pontosExibicao >= 12000) { rank = "Expert"; pinFixo = 1250; cor = "#e67e22"; }
+        else if (pontosExibicao >= 5000) { rank = "Senior"; pinFixo = 500; cor = "#27ae60"; }
+        else if (pontosExibicao >= 2000) { rank = "Start"; pinFixo = 150; cor = "#7f8c8d"; }
 
-        let bonusUnilevel = volumeMes * 0.05; // Média de 5% sobre o faturamento da rede
+        let bonusUnilevel = volumeFinanceiro * 0.05; 
         let totalMes = bonusUnilevel + pinFixo;
         rendaUltimoMes = totalMes;
 
@@ -110,10 +110,11 @@ function simular() {
                 <td>${mes}º Mês</td>
                 <td>${totalPessoas}</td>
                 <td><span class="rank-badge" style="background:${cor}; color:white">${rank}</span></td>
-                <td>${Math.floor(acumuladoPontosCiclo).toLocaleString('pt-BR')}</td>
-                <td>R$ ${bonusUnilevel.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+                <td>R$ ${volumeFinanceiro.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                <td>${Math.floor(pontosExibicao).toLocaleString('pt-BR')}</td>
+                <td>R$ ${bonusUnilevel.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
                 <td style="color:var(--primary); font-weight:bold">R$ ${pinFixo.toLocaleString('pt-BR')}</td>
-                <td class="highlight"><strong>R$ ${totalMes.toLocaleString('pt-BR', {minimumFractionDigits:2})}</strong></td>
+                <td class="highlight">R$ ${totalMes.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
             </tr>
         `;
     }
