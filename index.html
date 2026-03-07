@@ -104,4 +104,91 @@ function render() {
         { min: 28000, nome: "Professional", pin: 2500, vme: 0.40, cor: "#FF00FF" },
         { min: 50000, nome: "Diamond", pin: 5000, vme: 0.40, cor: "#3D5AFE" },
         { min: 78000, nome: "Diamond Expert", pin: 12000, vme: 0.40, cor: "#FF9100" },
-        {
+        { min: 122500, nome: "Diamond Global", pin: 24000, vme: 0.40, cor: "#1DE9B6" },
+        { min: 250000, nome: "Ambassador", pin: 48000, vme: 0.35, cor: "#F44336" },
+        { min: 500000, nome: "President", pin: 100000, vme: 0.30, cor: "#FFEB3B" },
+        { min: 1000000, nome: "Global President", pin: 200000, vme: 0.30, cor: "#FFFFFF" }
+    ];
+
+    for (let mes = 1; mes <= 10; mes++) {
+        let novosNoMes = Math.pow(n, mes);
+        redeAcumulada += novosNoMes;
+        
+        let volumeMensalTotal = redeAcumulada * consumo;
+        let ptsOrg = volumeMensalTotal / 3;
+        
+        let is3DActive = (mes % 2 === 0 && ptsOrg < 50000);
+        let ptsCarreira = is3DActive ? ptsOrg * 1.5 : ptsOrg;
+
+        let bonusUnilevelTotal = 0;
+        for (let gen = 1; gen <= mes; gen++) {
+            let pessoasGen = Math.pow(n, gen);
+            let volumeGen = pessoasGen * consumo;
+            let perc = (gen === 1 || gen === 2) ? 0.05 : (gen === 3 ? 0.09 : 0.04);
+            bonusUnilevelTotal += volumeGen * perc;
+        }
+
+        let ptsPorLinha = ptsCarreira / n;
+        let rankFinal = { nome: "Consultor", pin: 0, cor: "#555", vme: 1 };
+        for (let r of ranks) {
+            if (ptsCarreira >= r.min && ptsPorLinha <= (r.min * r.vme)) {
+                rankFinal = r;
+            }
+        }
+
+        let rendaTotal = bonusUnilevelTotal + rankFinal.pin;
+        let vmePerc = (ptsPorLinha / rankFinal.min) * 100 || 0;
+
+        html += `
+            <div class="level-card">
+                ${is3DActive ? '<div class="acelerador-badge">ACELERADOR 3D ATIVO</div>' : ''}
+                
+                <div class="rank-info">
+                    <span class="month">${mes}º</span>
+                    <span style="font-size:12px; font-weight:700; color:#666;">MÊS</span>
+                    <span class="rank-title" style="background:${rankFinal.cor}">${rankFinal.nome}</span>
+                </div>
+
+                <div class="data-grid">
+                    <div class="data-item">
+                        <span class="data-label">Volume de Rede</span>
+                        <span class="data-value">${redeAcumulada.toLocaleString()} Parceiros</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Volume Movimentado</span>
+                        <span class="data-value">R$ ${volumeMensalTotal.toLocaleString('pt-BR')}</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Volume de Pontos</span>
+                        <span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} Pts</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Bônus Level (Residual)</span>
+                        <span class="data-value">R$ ${bonusUnilevelTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">PIN Bonífica (Fixo)</span>
+                        <span class="data-value" style="color:var(--gold)">R$ ${rankFinal.pin.toLocaleString('pt-BR')}</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">VME (Trava de Segurança)</span>
+                        <span class="vme-status ${vmePerc > (rankFinal.vme*100) ? 'vme-alert' : 'vme-ok'}">
+                            ${vmePerc.toFixed(1)}% / ${Math.round(rankFinal.vme*100)}%
+                        </span>
+                    </div>
+                </div>
+
+                <div class="income-result">
+                    <span class="income-label">RENDA MENSAL TOTAL</span>
+                    <span class="income-value">R$ ${rendaTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                </div>
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+}
+render();
+</script>
+
+</body>
+</html>
