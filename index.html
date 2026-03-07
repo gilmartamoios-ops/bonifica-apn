@@ -42,7 +42,7 @@
         .rank-title { 
             color: #000; padding: 8px 12px; border-radius: 6px;
             font-size: 10px; font-weight: 900; display: inline-block; margin-top: 10px;
-            width: 160px; text-transform: uppercase;
+            width: 175px; text-transform: uppercase;
         }
 
         .data-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; }
@@ -95,20 +95,20 @@ function run() {
     let html = '';
     let redeTotal = 0;
 
-    // TABELA DE PIN FIXO (BÔNUS BONÍFICA) ATUALIZADA
+    // TABELA DE PIN FIXO (BÔNUS BONÍFICA) - VALORES CORRIGIDOS PELO USUÁRIO
     const ranks = [
         { min: 0, nome: "Consultor", pin: 0, vme: 1.0, cor: "#7f8c8d" },
         { min: 2000, nome: "Empreendedor", pin: 100, vme: 0.50, cor: "#00E5FF" },
-        { min: 5000, nome: "Sênior", pin: 300, vme: 0.50, cor: "#00FF41" },
-        { min: 12000, nome: "Expert", pin: 1200, vme: 0.40, cor: "#FFD700" },
-        { min: 28000, nome: "Enterprise", pin: 2500, vme: 0.40, cor: "#FF00FF" },
-        { min: 50000, nome: "Diamond", pin: 5000, vme: 0.40, cor: "#3D5AFE" },
-        { min: 78000, nome: "Diamond Expert", pin: 8000, vme: 0.40, cor: "#FF9100" },
-        { min: 122500, nome: "Diamond Global", pin: 15000, vme: 0.40, cor: "#1DE9B6" },
-        { min: 250000, nome: "Empresarial Diamond", pin: 30000, vme: 0.35, cor: "#F44336" },
-        { min: 500000, nome: "Imperial Bonific", pin: 70000, vme: 0.30, cor: "#FFEB3B" },
-        { min: 1000000, nome: "Majestic Bonific", pin: 150000, vme: 0.30, cor: "#ffffff" },
-        { min: 2000000, nome: "Empresarial", pin: 300000, vme: 0.30, cor: "#ff3366" }
+        { min: 5000, nome: "Sênior", pin: 200, vme: 0.50, cor: "#00FF41" },
+        { min: 12000, nome: "Expert", pin: 700, vme: 0.40, cor: "#FFD700" },
+        { min: 28000, nome: "Enterprise", pin: 1300, vme: 0.40, cor: "#FF00FF" },
+        { min: 50000, nome: "Diamond", pin: 4000, vme: 0.40, cor: "#3D5AFE" },
+        { min: 78000, nome: "Diamond Expert", pin: 12000, vme: 0.40, cor: "#FF9100" },
+        { min: 122500, nome: "Diamond Global", pin: 24000, vme: 0.40, cor: "#1DE9B6" },
+        { min: 250000, nome: "Empresarial Diamond", pin: 34000, vme: 0.35, cor: "#F44336" },
+        { min: 500000, nome: "Imperial Bonific", pin: 60000, vme: 0.30, cor: "#FFEB3B" },
+        { min: 1000000, nome: "Majestic Bonific", pin: 130000, vme: 0.30, cor: "#ffffff" },
+        { min: 2000000, nome: "Empresarial", pin: 250000, vme: 0.30, cor: "#ff3366" }
     ];
 
     for (let mes = 1; mes <= 12; mes++) {
@@ -119,11 +119,11 @@ function run() {
         let is3D = (mes % 2 === 0 && ptsOrg < 50000);
         let ptsCarreira = is3D ? ptsOrg * 1.5 : ptsOrg;
 
-        // BÔNUS UNILEVEL (5%, 5%, 9%, 4%, 4%, 4%...)
+        // BÔNUS UNILEVEL (5%, 5%, 9%, 4%) CALCULADO SOBRE VOLUME R$
         let unilevelBRL = 0;
         for (let g = 1; g <= mes; g++) {
             let volGen = Math.pow(n, g) * v;
-            let p = 0.04; // padrão a partir do 4º
+            let p = 0.04; 
             if(g === 1 || g === 2) p = 0.05;
             if(g === 3) p = 0.09;
             unilevelBRL += volGen * p;
@@ -140,19 +140,19 @@ function run() {
 
         html += `
             <div class="level-card">
-                ${is3D ? '<div class="acelerador-badge">3D ATIVO (x1.5 PONTOS)</div>' : ''}
+                ${is3D ? '<div class="acelerador-badge">ACELERADOR 3D ATIVO</div>' : ''}
                 <div class="rank-info">
                     <span class="month">${mes}º MÊS</span>
                     <span class="rank-title" style="background:${rankAtivo.cor}">${rankAtivo.nome}</span>
                 </div>
                 <div class="data-grid">
-                    <div class="data-item"><span class="data-label">Parceiros</span><span class="data-value">${redeTotal.toLocaleString()}</span></div>
-                    <div class="data-item"><span class="data-label">Pontuação</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
+                    <div class="data-item"><span class="data-label">Rede</span><span class="data-value">${redeTotal.toLocaleString()} Parceiros</span></div>
+                    <div class="data-item"><span class="data-label">Volume de Pontos</span><span class="data-value">${Math.floor(ptsCarreira).toLocaleString()} pts</span></div>
                     <div class="data-item"><span class="data-label">Unilevel (Residual)</span><span class="data-value unilevel-highlight">R$ ${unilevelBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
-                    <div class="data-item"><span class="data-label">Bônus Bonífica (PIN)</span><span class="data-value bonus-highlight">R$ ${rankAtivo.pin.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
+                    <div class="data-item"><span class="data-label">Bônus PIN Fixo</span><span class="data-value bonus-highlight">R$ ${rankAtivo.pin.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
                 </div>
                 <div class="income-result">
-                    <span class="income-label">GANHO TOTAL</span>
+                    <span class="income-label">RENDA TOTAL ESTIMADA</span>
                     <span class="income-value">R$ ${rendaFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
                 </div>
             </div>`;
