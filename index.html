@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bonífica | Simulador de Ciclos Reais</title>
+    <title>Bonífica | Simulador de Ciclos e Movimentação</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,7 +12,7 @@
         }
         body { font-family: 'Montserrat', sans-serif; background: var(--dark); color: var(--text); margin: 0; padding: 20px; }
         .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-weight: 900; color: var(--gold); text-transform: uppercase; }
+        .header h1 { font-weight: 900; color: var(--gold); text-transform: uppercase; font-size: 1.6rem; }
         
         .config-panel {
             max-width: 800px; margin: 0 auto 30px; background: var(--card);
@@ -21,57 +21,60 @@
         }
         .config-group input { 
             background: #000; border: 1px solid var(--gold); padding: 10px; border-radius: 8px;
-            font-size: 20px; font-weight: 900; color: var(--primary); width: 100px; text-align: center;
+            font-size: 20px; font-weight: 900; color: var(--primary); width: 110px; text-align: center; outline: none;
         }
 
-        .career-path { max-width: 1000px; margin: auto; display: flex; flex-direction: column; gap: 15px; }
+        .career-path { max-width: 1100px; margin: auto; display: flex; flex-direction: column; gap: 15px; }
         
         .level-card {
             background: var(--card); border-radius: 20px; padding: 25px;
-            display: grid; grid-template-columns: 160px 1fr 250px;
+            display: grid; grid-template-columns: 160px 1fr 260px;
             align-items: center; gap: 20px; border: 1px solid #222;
             position: relative; overflow: hidden;
         }
 
-        /* Cores dos Ciclos para diferenciar visualmente */
-        .ciclo-impar { border-left: 5px solid #555; }
         .ciclo-par { border-left: 5px solid var(--danger); background: #161616; }
+        .ciclo-impar { border-left: 5px solid #444; }
 
         .rank-info { text-align: center; border-right: 1px solid #333; }
         .month-num { font-size: 38px; font-weight: 900; color: #fff; display: block; }
         .cycle-tag { font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; }
-        .tag-abertura { background: #444; color: #ccc; }
+        .tag-abertura { background: #333; color: #aaa; }
         .tag-fechamento { background: var(--danger); color: #fff; }
 
+        /* Grid de dados atualizado para comportar a nova célula */
         .data-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px; }
-        .data-label { font-size: 10px; font-weight: 700; color: #666; text-transform: uppercase; }
-        .data-value { font-size: 14px; font-weight: 700; color: #eee; }
+        .data-item { display: flex; flex-direction: column; }
+        .data-label { font-size: 9px; font-weight: 700; color: #666; text-transform: uppercase; margin-bottom: 2px; }
+        .data-value { font-size: 13px; font-weight: 700; color: #eee; }
         
-        .pin-result { font-weight: 900; color: var(--gold); font-size: 16px; }
+        .highlight-pts { color: var(--primary) !important; font-size: 15px; }
+        .highlight-brl { color: #fff !important; }
+
         .income-box { background: #000; padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #333; }
-        .income-total { font-size: 24px; font-weight: 900; color: var(--primary); display: block; }
+        .income-total { font-size: 26px; font-weight: 900; color: var(--primary); display: block; }
 
         .bonus-3d-alert {
             position: absolute; top: 10px; right: -30px; background: var(--danger);
             color: #fff; font-size: 10px; font-weight: 900; padding: 5px 40px;
-            transform: rotate(45deg);
+            transform: rotate(45deg); box-shadow: 0 0 10px rgba(255,51,102,0.4);
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>Dashboard Bonífica | Ciclos de 60 Dias</h1>
-    <p style="font-size: 12px; color: #888;">REGRA: No 2º mês do ciclo o bônus 3D ajuda no PIN. No 3º mês o bônus ZERA.</p>
+    <h1>Simulador Bonífica: Movimentação e Ciclos</h1>
+    <p style="font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px;">Critério: 300 pts = R$ 0 PIN | Primeiro PIN aos 950 pts | Ciclo 60 Dias</p>
 </div>
 
-<div class="config-panel" id="controls">
+<div class="config-panel">
     <div class="config-group">
-        <label style="color:var(--gold); display:block; font-size:10px; margin-bottom:5px;">REDE (Nº NOVOS)</label>
+        <label style="color:var(--gold); display:block; font-size:10px; margin-bottom:5px; font-weight: 700;">DUPLICAÇÃO/MÊS</label>
         <input type="number" id="inp_n" value="5" oninput="run()">
     </div>
     <div class="config-group">
-        <label style="color:var(--gold); display:block; font-size:10px; margin-bottom:5px;">CONSUMO (R$)</label>
+        <label style="color:var(--gold); display:block; font-size:10px; margin-bottom:5px; font-weight: 700;">CONSUMO MÉDIO (R$)</label>
         <input type="number" id="inp_v" value="300" oninput="run()">
     </div>
 </div>
@@ -86,7 +89,7 @@ function run() {
     
     let html = '';
     let redeTotal = 0;
-    let ptsMesAnterior = 0;
+    let ptsMesAnteriorParaBonus = 0;
 
     const tiers = [
         { pts: 950, pin: 100, vme: 0.5 },
@@ -103,25 +106,23 @@ function run() {
     ];
 
     for (let mes = 1; mes <= 12; mes++) {
-        // Crescimento da rede - Simulação Mês a Mês
         redeTotal += Math.pow(n, mes);
-        let ptsMensalReal = (redeTotal * v) / 3;
+        let faturamentoRedeBRL = redeTotal * v; // R$ Total movimentado
+        let ptsRedeMensal = faturamentoRedeBRL / 3; // Total de pontos da rede
         
-        // IDENTIFICAÇÃO DO CICLO
         let isFechamentoCiclo = (mes % 2 === 0);
-        let bonus30D = 0;
+        let bonus3D = 0;
 
-        // REGRA DO BÔNUS 3D: Apenas no fechamento do ciclo e se houver crescimento
+        // Bônus 3D: Baseado no mês anterior do ciclo, limitado ao Diamond
         if (isFechamentoCiclo) {
-            if (ptsMensalReal > ptsMesAnterior && ptsMensalReal <= 27500) {
-                bonus30D = ptsMesAnterior; 
+            if (ptsRedeMensal > ptsMesAnteriorParaBonus && ptsRedeMensal <= 27500) {
+                bonus3D = ptsMesAnteriorParaBonus; 
             }
         }
 
-        // PONTUAÇÃO DE CARREIRA (Soma o bônus apenas para atingir o PIN do mês)
-        let ptsCarreiraParaPIN = ptsMensalReal + bonus30D;
+        let ptsParaCarreira = ptsRedeMensal + bonus3D;
 
-        // UNILEVEL (Sempre sobre a produção REAL do mês)
+        // Unilevel
         let unilevelBRL = 0;
         for (let g = 1; g <= mes; g++) {
             let volGen = Math.pow(n, g) * v;
@@ -129,47 +130,66 @@ function run() {
             unilevelBRL += volGen * p;
         }
 
-        // CÁLCULO DO PIN ATINGIDO
-        let currentPinVal = 0;
+        // Determinação do PIN
+        let currentPinBonus = 0;
         let pinName = 0;
-        let ptsPorLinha = ptsCarreiraParaPIN / n;
+        let ptsPorLinha = ptsParaCarreira / n;
 
         for (let t of tiers) {
             let ptsValidos = n * Math.min(ptsPorLinha, t.pts * t.vme);
             if (ptsValidos >= t.pts) {
-                currentPinVal = t.pin;
+                currentPinBonus = t.pin;
                 pinName = t.pts;
             }
         }
 
         html += `
             <div class="level-card ${isFechamentoCiclo ? 'ciclo-par' : 'ciclo-impar'}">
-                ${bonus30D > 0 ? '<div class="bonus-3d-alert">BÔNUS 3D</div>' : ''}
+                ${bonus3D > 0 ? '<div class="bonus-3d-alert">BÔNUS 3D ATIVO</div>' : ''}
                 
                 <div class="rank-info">
                     <span class="month-num">${mes}º</span>
                     <span class="cycle-tag ${isFechamentoCiclo ? 'tag-fechamento' : 'tag-abertura'}">
-                        ${isFechamentoCiclo ? 'Fechamento Ciclo' : 'Início Ciclo'}
+                        ${isFechamentoCiclo ? 'Fechamento de Ciclo' : 'Início de Ciclo'}
                     </span>
-                    <div style="margin-top:10px">
-                        <span class="pin-result">${pinName > 0 ? 'PIN ' + pinName.toLocaleString() : 'SEM PIN'}</span>
+                    <div style="margin-top:12px">
+                        <span style="font-size:9px; color:#777; display:block; font-weight:bold;">QUALIFICAÇÃO</span>
+                        <span class="pin-result" style="color:${pinName > 0 ? 'var(--gold)' : '#555'}">
+                            ${pinName > 0 ? pinName.toLocaleString() + ' PTS' : 'SEM PIN'}
+                        </span>
                     </div>
                 </div>
                 
                 <div class="data-grid">
-                    <div class="data-item"><span class="data-label">Produção Real</span><span class="data-value">${Math.floor(ptsMensalReal).toLocaleString()} pts</span></div>
-                    <div class="data-item"><span class="data-label">Ajuda 30D</span><span class="data-value" style="color:${bonus30D > 0 ? 'var(--danger)' : '#444'}">+ ${Math.floor(bonus30D).toLocaleString()} pts</span></div>
-                    <div class="data-item"><span class="data-label">Residual Unilevel</span><span class="data-value">R$ ${unilevelBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
-                    <div class="data-item"><span class="data-label">Bônus PIN</span><span class="data-value" style="color:var(--gold)">R$ ${currentPinVal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></div>
+                    <div class="data-item">
+                        <span class="data-label">R$ Movimentado da Rede</span>
+                        <span class="data-value highlight-brl">R$ ${faturamentoRedeBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Total de Pontos da Rede</span>
+                        <span class="data-value highlight-pts">${Math.floor(ptsRedeMensal).toLocaleString()} pts</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Ajuda Acelerador 3D</span>
+                        <span class="data-value" style="color:${bonus3D > 0 ? 'var(--danger)' : '#444'}">+ ${Math.floor(bonus3D).toLocaleString()} pts</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Bônus PIN Mensal</span>
+                        <span class="data-value" style="color:var(--gold)">R$ ${currentPinBonus.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="data-item" style="grid-column: span 2;">
+                        <span class="data-label">Residual Unilevel (Mês)</span>
+                        <span class="data-value">R$ ${unilevelBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                    </div>
                 </div>
 
                 <div class="income-box">
-                    <span class="data-label" style="color:var(--primary)">GANHO NO MÊS</span>
-                    <span class="income-total">R$ ${(unilevelBRL + currentPinVal).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                    <span class="data-label" style="color:var(--primary)">RENDIMENTO TOTAL NO MÊS</span>
+                    <span class="income-total">R$ ${(unilevelBRL + currentPinBonus).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
                 </div>
             </div>`;
         
-        ptsMesAnterior = ptsMensalReal; // Prepara para comparar no próximo mês
+        ptsMesAnteriorParaBonus = ptsRedeMensal;
     }
     container.innerHTML = html;
 }
